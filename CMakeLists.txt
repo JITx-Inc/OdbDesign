@@ -29,6 +29,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
+add_compile_definitions(_DEBUG)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)

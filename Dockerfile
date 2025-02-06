@@ -61,11 +61,11 @@ COPY . .
 
 # configure & build using presets
 # linux-release
-RUN cmake --preset linux-release
-RUN cmake --build --preset linux-release
+# RUN cmake --preset linux-release
+# RUN cmake --build --preset linux-release
 # # linux-debug
-# RUN cmake --preset linux-debug
-# RUN cmake --build --preset linux-debug
+RUN cmake --preset linux-debug
+RUN cmake --build --preset linux-debug
 
 # much smaller runtime image
 FROM --platform=$BUILDPLATFORM debian:bookworm-20240722-slim@sha256:5f7d5664eae4a192c2d2d6cb67fc3f3c7891a8722cd2903cc35aa649a12b0c8d AS run
@@ -99,11 +99,19 @@ RUN mkdir --parents /OdbDesign/bin
 WORKDIR /OdbDesign
 
 # copy binaries
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/*.so ./bin/
-COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so ./bin/
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer ./bin/
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so ./bin/
-COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests ./bin/
+# release
+# COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignLib/*.so ./bin/
+# COPY --from=build /src/OdbDesign/out/build/linux-release/Utils/*.so ./bin/
+# COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/OdbDesignServer ./bin/
+# COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignServer/*.so ./bin/
+# COPY --from=build /src/OdbDesign/out/build/linux-release/OdbDesignTests/OdbDesignTests ./bin/
+# debug
+COPY --from=build /src/OdbDesign/out/build/linux-debug/OdbDesignLib/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-debug/Utils/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-debug/OdbDesignServer/OdbDesignServer ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-debug/OdbDesignServer/*.so ./bin/
+COPY --from=build /src/OdbDesign/out/build/linux-debug/OdbDesignTests/OdbDesignTests ./bin/
+
 
 # copy templates directory
 RUN mkdir -p ./templates
@@ -114,6 +122,7 @@ COPY --from=build /src/OdbDesign/OdbDesignServer/templates/* ./templates
 #RUN mkdir ./designs
 
 # run
+ENV Environment=Local
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/OdbDesign/bin
 # ENV ODBDESIGN_SERVER_REQUEST_USERNAME=${ODBDESIGN_SERVER_REQUEST_USERNAME}
 # ENV ODBDESIGN_SERVER_REQUEST_PASSWORD=${ODBDESIGN_SERVER_REQUEST_PASSWORD}
